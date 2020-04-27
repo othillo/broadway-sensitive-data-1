@@ -9,19 +9,27 @@ test:
 	vendor/bin/phpunit --testdox --exclude-group=none --colors=always
 
 .PHONY: qa
-qa: php-cs-fixer phpstan
+qa: php-cs-fixer-ci phpstan
 
 .PHONY: php-cs-fixer
 php-cs-fixer:
 	vendor/bin/php-cs-fixer fix --no-interaction --allow-risky=yes --diff --verbose
 
-.PHONY: phpstan
+.PHONY: php-cs-fixer-ci
+php-cs-fixer-ci:
+	vendor/bin/php-cs-fixer fix --dry-run --no-interaction --allow-risky=yes --diff --verbose
+
+PHONY: phpstan
 phpstan:
 	vendor/bin/phpstan analyse -l max src/
 
 .PHONY: changelog
 changelog:
 	git log $$(git describe --abbrev=0 --tags)...HEAD --no-merges --pretty=format:"* [%h](http://github.com/${TRAVIS_REPO_SLUG}/commit/%H) %s (%cN)"
+
+.PHONY: license
+license:
+	vendor/bin/docheader check --no-interaction --ansi -vvv {src,test,examples}
 
 # Based on https://suva.sh/posts/well-documented-makefiles/
 help:  ## Display this help
